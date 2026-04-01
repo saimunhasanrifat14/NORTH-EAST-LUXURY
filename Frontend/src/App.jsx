@@ -2,6 +2,7 @@ import Navbar from './components/Navbar'
 import HeroSection from './components/HeroSection'
 import AboutSection from './components/AboutSection'
 import ServicesSection from './components/ServicesSection'
+import AfterBookingSection from './components/AfterBookingSection'
 import BookingSection from './components/BookingSection'
 import Footer from './components/Footer'
 
@@ -19,6 +20,7 @@ const App = () => {
 
       <AboutSection />
       <ServicesSection />
+      <AfterBookingSection />
       <BookingSection />
       <Footer />
     </div>
