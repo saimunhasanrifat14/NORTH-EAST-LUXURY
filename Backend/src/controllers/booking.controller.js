@@ -4,6 +4,42 @@ const { APIResponse } = require("../utilities/APIResponse");
 const { AsyncHandler } = require("../utilities/AsyncHandler");
 const { CustomError } = require("../utilities/CustomError");
 
+const BOOKING_STATUSES = ["pending", "confirmed", "completed", "cancelled"];
+
+const buildBookingQuery = (queryParams = {}) => {
+  const {
+    search = "",
+    status = "",
+    serviceType = "",
+    vehicleType = "",
+  } = queryParams;
+
+  const mongoQuery = {};
+
+  if (search.trim()) {
+    const searchRegex = new RegExp(search.trim(), "i");
+    mongoQuery.$or = [
+      { fullName: searchRegex },
+      { email: searchRegex },
+      { phoneNumber: searchRegex },
+    ];
+  }
+
+  if (BOOKING_STATUSES.includes(status)) {
+    mongoQuery.status = status;
+  }
+
+  if (serviceType.trim()) {
+    mongoQuery.serviceType = serviceType.trim();
+  }
+
+  if (vehicleType.trim()) {
+    mongoQuery.vehicleType = vehicleType.trim();
+  }
+
+  return mongoQuery;
+};
+
 exports.CreateBooking = AsyncHandler(async (req, res) => {
   const {
     fullName,
@@ -58,14 +94,21 @@ exports.getAllBookings = AsyncHandler(async (req, res) => {
     Math.max(1, Number.parseInt(req.query.limit, 10) || 10)
   );
   const skip = (page - 1) * limit;
+  const mongoQuery = buildBookingQuery(req.query);
 
   const [bookings, totalBookings] = await Promise.all([
-    Booking.find().sort({ createdAt: -1 }).skip(skip).limit(limit),
-    Booking.countDocuments(),
+    Booking.find(mongoQuery).sort({ createdAt: -1 }).skip(skip).limit(limit),
+    Booking.countDocuments(mongoQuery),
   ]);
 
   APIResponse.success(res, 200, "Bookings retrieved successfully", {
     bookings,
+    filters: {
+      search: req.query.search?.trim() || "",
+      status: req.query.status?.trim() || "",
+      serviceType: req.query.serviceType?.trim() || "",
+      vehicleType: req.query.vehicleType?.trim() || "",
+    },
     pagination: {
       page,
       limit,
@@ -74,6 +117,44 @@ exports.getAllBookings = AsyncHandler(async (req, res) => {
       hasNextPage: page * limit < totalBookings,
       hasPrevPage: page > 1,
     },
+  });
+});
+
+exports.getBookingOverview = AsyncHandler(async (_req, res) => {
+  const [totalBookings, statusCounts] = await Promise.all([
+    Booking.countDocuments(),
+    Booking.aggregate([
+      {
+        $group: {
+          _id: "$status",
+          count: { $sum: 1 },
+        },
+      },
+    ]),
+  ]);
+
+  const countsByStatus = BOOKING_STATUSES.reduce((accumulator, status) => {
+    accumulator[status] = 0;
+    return accumulator;
+  }, {});
+
+  statusCounts.forEach(({ _id, count }) => {
+    if (countsByStatus[_id] !== undefined) {
+      countsByStatus[_id] = count;
+    }
+  });
+
+  const percentages = BOOKING_STATUSES.reduce((accumulator, status) => {
+    accumulator[status] = totalBookings
+      ? Math.round((countsByStatus[status] / totalBookings) * 100)
+      : 0;
+    return accumulator;
+  }, {});
+
+  APIResponse.success(res, 200, "Booking overview retrieved successfully", {
+    totalBookings,
+    counts: countsByStatus,
+    percentages,
   });
 });
 

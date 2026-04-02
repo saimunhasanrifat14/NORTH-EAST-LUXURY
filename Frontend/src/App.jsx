@@ -1,29 +1,32 @@
-import Navbar from './components/Navbar'
-import HeroSection from './components/HeroSection'
-import AboutSection from './components/AboutSection'
-import ServicesSection from './components/ServicesSection'
-import AfterBookingSection from './components/AfterBookingSection'
-import BookingSection from './components/BookingSection'
-import Footer from './components/Footer'
+import { useEffect } from 'react'
+import { Navigate, Route, Routes } from 'react-router-dom'
+import HomePage from './pages/HomePage'
+import LoginPage from './pages/LoginPage'
+import Dashboard from './dashboard/Dashboard'
+import Overview from './dashboard/pages/Overview'
+import Bookings from './dashboard/pages/Bookings'
 
 const App = () => {
-  return (
-    <div className="min-h-screen bg-BGWhite text-TextBlack transition-colors duration-300">
-      <div className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_color-mix(in_srgb,var(--color-TextDateColor)_22%,transparent),_transparent_38%)]" />
-        <div className="absolute inset-x-0 top-0 h-[32rem] bg-[linear-gradient(180deg,color-mix(in_srgb,var(--color-BGWhite)_96%,transparent)_0%,color-mix(in_srgb,var(--color-BGWhite)_72%,transparent)_55%,transparent_100%)]" />
-        <div className="relative">
-          <Navbar />
-          <HeroSection />
-        </div>
-      </div>
+  useEffect(() => {
+    if (!document.documentElement.classList.contains('light') && !document.documentElement.classList.contains('dark')) {
+      document.documentElement.classList.add('light')
+    }
+  }, [])
 
-      <AboutSection />
-      <ServicesSection />
-      <AfterBookingSection />
-      <BookingSection />
-      <Footer />
-    </div>
+  return (
+    <Routes>
+      <Route path="/" element={<HomePage />} />
+      <Route path="/login" element={<LoginPage />} />
+
+      <Route path="/dashboard" element={<Dashboard />}>
+        <Route index element={<Navigate to="overview" replace />} />
+        <Route path="overview" element={<Overview />} />
+        <Route path="bookings" element={<Bookings />} />
+      </Route>
+
+      <Route path="/admin-panel" element={<Navigate to="/dashboard/overview" replace />} />
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
   )
 }
 
