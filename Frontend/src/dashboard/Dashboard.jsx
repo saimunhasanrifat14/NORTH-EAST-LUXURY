@@ -61,10 +61,10 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen overflow-x-hidden bg-[linear-gradient(180deg,#f6f2eb_0%,#fbf8f3_100%)] p-0 text-TextBlack">
-      <div className="flex min-h-screen w-full flex-col gap-0 lg:flex-row">
+      <div className="flex min-h-screen w-full flex-col gap-0 lg:h-screen lg:flex-row">
         <Sidebar admin={admin} onLogout={handleLogout} />
 
-        <main className="min-w-0 flex-1 bg-white p-5 sm:p-6 lg:p-8">
+        <main className="min-w-0 flex-1 bg-white p-5 lg:h-screen lg:overflow-y-auto sm:p-6 lg:p-8">
           <Outlet context={{ admin }} />
         </main>
       </div>

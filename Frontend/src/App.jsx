@@ -5,6 +5,7 @@ import LoginPage from './pages/LoginPage'
 import Dashboard from './dashboard/Dashboard'
 import Overview from './dashboard/pages/Overview'
 import Bookings from './dashboard/pages/Bookings'
+import SingleBooking from './dashboard/pages/SingleBooking'
 
 const App = () => {
   useEffect(() => {
@@ -22,6 +23,7 @@ const App = () => {
         <Route index element={<Navigate to="overview" replace />} />
         <Route path="overview" element={<Overview />} />
         <Route path="bookings" element={<Bookings />} />
+        <Route path="bookings/:bookingId" element={<SingleBooking />} />
       </Route>
 
       <Route path="/admin-panel" element={<Navigate to="/dashboard/overview" replace />} />

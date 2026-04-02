@@ -51,7 +51,6 @@ const CircleChart = ({ color, label, percentage, count }) => {
           </svg>
           <div className="absolute inset-0 flex flex-col items-center justify-center">
             <span className="text-3xl font-semibold text-TextBlack">{safePercentage}%</span>
-            <span className="mt-1 text-xs uppercase tracking-[0.2em] text-TextGray">of total</span>
           </div>
         </div>
       </div>

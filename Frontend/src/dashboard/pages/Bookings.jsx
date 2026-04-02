@@ -111,6 +111,10 @@ const Bookings = () => {
     }))
   }
 
+  const handleOpenBooking = (bookingId) => {
+    navigate(`/dashboard/bookings/${bookingId}`)
+  }
+
   return (
     <section>
       <div className="flex flex-col gap-3 border-b border-GrayBorder pb-6 xl:flex-row xl:items-end xl:justify-between">
@@ -216,7 +220,11 @@ const Bookings = () => {
               </tr>
             ) : bookings.length ? (
               bookings.map((booking) => (
-                <tr key={booking._id} className="bg-[#faf7f2]">
+                <tr
+                  key={booking._id}
+                  className="cursor-pointer bg-[#faf7f2] transition hover:bg-[#f3ede4]"
+                  onClick={() => handleOpenBooking(booking._id)}
+                >
                   <td className="rounded-l-2xl px-4 py-4 align-top">
                     <p className="text-sm font-semibold text-TextBlack">{booking.fullName}</p>
                     <p className="mt-1 truncate text-sm text-TextGray">{booking.email}</p>
@@ -277,7 +285,11 @@ const Bookings = () => {
           </div>
         ) : bookings.length ? (
           bookings.map((booking) => (
-            <article key={booking._id} className="rounded-[26px] border border-GrayBorder bg-[#faf7f2] p-4">
+            <article
+              key={booking._id}
+              onClick={() => handleOpenBooking(booking._id)}
+              className="cursor-pointer rounded-[26px] border border-GrayBorder bg-[#faf7f2] p-4 transition hover:bg-[#f3ede4]"
+            >
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
                   <h3 className="truncate text-base font-semibold text-TextBlack">{booking.fullName}</h3>

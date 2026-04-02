@@ -170,3 +170,31 @@ exports.getSingleBooking = AsyncHandler(async (req, res) => {
 
   APIResponse.success(res, 200, "Booking retrieved successfully", booking);
 });
+
+exports.updateBookingStatus = AsyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const { status } = req.body;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    throw new CustomError(400, "Invalid booking id");
+  }
+
+  if (!status || !BOOKING_STATUSES.includes(status)) {
+    throw new CustomError(
+      400,
+      `Valid status is required: ${BOOKING_STATUSES.join(", ")}`
+    );
+  }
+
+  const booking = await Booking.findByIdAndUpdate(
+    id,
+    { status },
+    { new: true, runValidators: true }
+  );
+
+  if (!booking) {
+    throw new CustomError(404, "Booking not found");
+  }
+
+  APIResponse.success(res, 200, "Booking status updated successfully", booking);
+});

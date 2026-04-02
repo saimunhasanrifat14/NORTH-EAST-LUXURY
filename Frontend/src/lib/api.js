@@ -160,6 +160,48 @@ export const getBookingOverview = async () => {
   }
 }
 
+export const getSingleBooking = async (bookingId) => {
+  try {
+    return await request(`/booking/getsinglebooking/${bookingId}`, { method: 'GET' })
+  } catch (error) {
+    if (error.status !== 401) {
+      throw error
+    }
+
+    try {
+      await refreshAccessToken()
+      return request(`/booking/getsinglebooking/${bookingId}`, { method: 'GET' })
+    } catch (refreshError) {
+      clearStoredAuth()
+      throw refreshError
+    }
+  }
+}
+
+export const updateBookingStatus = async (bookingId, status) => {
+  try {
+    return await request(`/booking/updatestatus/${bookingId}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ status }),
+    })
+  } catch (error) {
+    if (error.status !== 401) {
+      throw error
+    }
+
+    try {
+      await refreshAccessToken()
+      return request(`/booking/updatestatus/${bookingId}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ status }),
+      })
+    } catch (refreshError) {
+      clearStoredAuth()
+      throw refreshError
+    }
+  }
+}
+
 export const logoutAdmin = async () => {
   try {
     await request('/auth/logout', { method: 'POST' })
