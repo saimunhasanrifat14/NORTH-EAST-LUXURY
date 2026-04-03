@@ -3,8 +3,10 @@ import { useForm } from 'react-hook-form'
 import LocationAutocomplete from './LocationAutocomplete'
 import CustomSelectField from './CustomSelectField'
 
+const DEFAULT_BOOKING_API_URL =
+  'https://north-east-luxury-backend.onrender.com/api/v1/booking/createbooking'
 const BOOKING_API_URL =
-  import.meta.env.VITE_BOOKING_API_URL ?? 'http://localhost:3000/api/v1/booking/createbooking'
+  (import.meta.env.VITE_BOOKING_API_URL ?? DEFAULT_BOOKING_API_URL).replace(/\/$/, '')
 
 const topFields = [
   { name: 'fullName', label: 'Full Name', type: 'text', placeholder: 'John Smith' },
