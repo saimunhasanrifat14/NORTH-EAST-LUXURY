@@ -22,6 +22,68 @@ const formatDate = (value) => {
   }).format(new Date(value))
 }
 
+const BookingTableSkeleton = () => (
+  <>
+    {Array.from({ length: 6 }).map((_, index) => (
+      <tr key={`booking-table-skeleton-${index}`} className="bg-[#faf7f2]">
+        <td className="rounded-l-2xl px-4 py-4 align-top">
+          <div className="h-4 w-32 animate-pulse rounded-full bg-[#e8dfd2]" />
+          <div className="mt-2 h-4 w-40 animate-pulse rounded-full bg-[#efe7dc]" />
+        </td>
+        <td className="px-4 py-4 align-top">
+          <div className="h-4 w-20 animate-pulse rounded-full bg-[#e8dfd2]" />
+        </td>
+        <td className="px-4 py-4 align-top">
+          <div className="h-4 w-16 animate-pulse rounded-full bg-[#e8dfd2]" />
+        </td>
+        <td className="px-4 py-4 align-top">
+          <div className="h-4 w-16 animate-pulse rounded-full bg-[#e8dfd2]" />
+        </td>
+        <td className="px-4 py-4 align-top">
+          <div className="h-4 w-36 animate-pulse rounded-full bg-[#e8dfd2]" />
+        </td>
+        <td className="px-4 py-4 align-top">
+          <div className="h-4 w-20 animate-pulse rounded-full bg-[#e8dfd2]" />
+          <div className="mt-2 h-4 w-16 animate-pulse rounded-full bg-[#efe7dc]" />
+        </td>
+        <td className="rounded-r-2xl px-4 py-4 align-top">
+          <div className="h-7 w-20 animate-pulse rounded-full bg-[#eadfcb]" />
+        </td>
+      </tr>
+    ))}
+  </>
+)
+
+const BookingCardSkeleton = () => (
+  <>
+    {Array.from({ length: 4 }).map((_, index) => (
+      <article
+        key={`booking-card-skeleton-${index}`}
+        className="rounded-[26px] border border-GrayBorder bg-[#faf7f2] p-4"
+      >
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0 flex-1">
+            <div className="h-5 w-32 animate-pulse rounded-full bg-[#e8dfd2]" />
+            <div className="mt-2 h-4 w-40 animate-pulse rounded-full bg-[#efe7dc]" />
+          </div>
+          <div className="h-7 w-20 animate-pulse rounded-full bg-[#eadfcb]" />
+        </div>
+
+        <div className="mt-4 grid gap-3 sm:grid-cols-2">
+          {Array.from({ length: 5 }).map((__, itemIndex) => (
+            <div
+              key={`booking-card-skeleton-line-${index}-${itemIndex}`}
+              className={`h-4 animate-pulse rounded-full bg-[#e8dfd2] ${
+                itemIndex === 4 ? 'w-3/4 sm:col-span-2' : 'w-full'
+              }`}
+            />
+          ))}
+        </div>
+      </article>
+    ))}
+  </>
+)
+
 const Bookings = () => {
   const navigate = useNavigate()
   const [bookings, setBookings] = useState([])
@@ -199,7 +261,7 @@ const Bookings = () => {
         <table className="min-w-full table-fixed border-separate border-spacing-y-3">
           <thead>
             <tr>
-              {['Customer', 'Phone', 'Service', 'Vehicle', 'Pickup', 'Dropoff', 'Date', 'Request', 'Status'].map(
+              {['Customer', 'Phone', 'Service', 'Vehicle', 'Pickup', 'Date', 'Status'].map(
                 (label) => (
                   <th
                     key={label}
@@ -213,11 +275,7 @@ const Bookings = () => {
           </thead>
           <tbody>
             {isLoadingBookings ? (
-              <tr>
-                <td colSpan={9} className="px-4 py-8 text-center text-sm text-TextGray">
-                  Loading bookings...
-                </td>
-              </tr>
+              <BookingTableSkeleton />
             ) : bookings.length ? (
               bookings.map((booking) => (
                 <tr
@@ -238,21 +296,9 @@ const Bookings = () => {
                   >
                     {booking.pickupLocation}
                   </td>
-                  <td
-                    className="max-w-[180px] truncate px-4 py-4 align-top text-sm text-TextGray"
-                    title={booking.dropoffLocation}
-                  >
-                    {booking.dropoffLocation}
-                  </td>
                   <td className="px-4 py-4 align-top text-sm text-TextBlack">
                     <p>{formatDate(booking.date)}</p>
                     <p className="mt-1 text-TextGray">{booking.time}</p>
-                  </td>
-                  <td
-                    className="max-w-[170px] truncate px-4 py-4 align-top text-sm text-TextGray"
-                    title={booking.specialRequests || 'No special request'}
-                  >
-                    {booking.specialRequests || 'No special request'}
                   </td>
                   <td className="rounded-r-2xl px-4 py-4 align-top">
                     <span
@@ -269,7 +315,7 @@ const Bookings = () => {
               ))
             ) : (
               <tr>
-                <td colSpan={9} className="px-4 py-8 text-center text-sm text-TextGray">
+                <td colSpan={7} className="px-4 py-8 text-center text-sm text-TextGray">
                   No bookings found for the current search and filters.
                 </td>
               </tr>
@@ -280,9 +326,7 @@ const Bookings = () => {
 
       <div className="mt-6 grid gap-4 xl:hidden">
         {isLoadingBookings ? (
-          <div className="rounded-2xl border border-GrayBorder bg-[#faf7f2] px-4 py-5 text-sm text-TextGray">
-            Loading bookings...
-          </div>
+          <BookingCardSkeleton />
         ) : bookings.length ? (
           bookings.map((booking) => (
             <article
@@ -313,12 +357,6 @@ const Bookings = () => {
                 <p>Date: {formatDate(booking.date)}</p>
                 <p className="truncate" title={booking.pickupLocation}>
                   Pickup: {booking.pickupLocation}
-                </p>
-                <p className="truncate" title={booking.dropoffLocation}>
-                  Dropoff: {booking.dropoffLocation}
-                </p>
-                <p className="truncate sm:col-span-2" title={booking.specialRequests || 'No special request'}>
-                  Request: {booking.specialRequests || 'No special request'}
                 </p>
               </div>
             </article>

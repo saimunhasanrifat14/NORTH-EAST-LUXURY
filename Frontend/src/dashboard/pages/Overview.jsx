@@ -25,7 +25,34 @@ const CircleChart = ({ color, label, percentage, count }) => {
   const safePercentage = Math.max(0, Math.min(100, percentage || 0))
   const radius = 44
   const circumference = 2 * Math.PI * radius
-  const offset = circumference - (safePercentage / 100) * circumference
+  const [animatedPercentage, setAnimatedPercentage] = useState(0)
+
+  useEffect(() => {
+    let frameId
+    const animationDuration = 1200
+    const animationStart = window.performance.now()
+
+    setAnimatedPercentage(0)
+
+    const animate = (currentTime) => {
+      const progress = Math.min((currentTime - animationStart) / animationDuration, 1)
+      const easedProgress = 1 - (1 - progress) ** 3
+
+      setAnimatedPercentage(Math.round(safePercentage * easedProgress))
+
+      if (progress < 1) {
+        frameId = window.requestAnimationFrame(animate)
+      }
+    }
+
+    frameId = window.requestAnimationFrame(animate)
+
+    return () => {
+      window.cancelAnimationFrame(frameId)
+    }
+  }, [safePercentage])
+
+  const offset = circumference - (animatedPercentage / 100) * circumference
 
   return (
     <div className="rounded-[28px] border border-GrayBorder bg-white p-5 shadow-sm">
@@ -47,10 +74,11 @@ const CircleChart = ({ color, label, percentage, count }) => {
               strokeLinecap="round"
               strokeDasharray={circumference}
               strokeDashoffset={offset}
+              style={{ transition: 'stroke-dashoffset 80ms linear' }}
             />
           </svg>
           <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <span className="text-3xl font-semibold text-TextBlack">{safePercentage}%</span>
+            <span className="text-3xl font-semibold text-TextBlack">{animatedPercentage}%</span>
           </div>
         </div>
       </div>
